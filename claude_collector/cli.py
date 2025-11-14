@@ -16,13 +16,86 @@ from rich.table import Table
 console = Console()
 
 def sanitize(text):
-    """Minimal sanitization - only critical PII"""
+    """Comprehensive sanitization - removes all sensitive data"""
     if not isinstance(text, str):
         return str(text)
-    # Only sanitize truly sensitive data
+    
+    # Email addresses
     text = re.sub(r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b', '[EMAIL]', text)
-    text = re.sub(r'sk-[a-zA-Z0-9]{48}', '[API_KEY]', text)
-    text = re.sub(r'/Users/([^/\s]+)', r'/Users/[USER]', text)  # Keep structure
+    
+    # API Keys and Tokens
+    text = re.sub(r'sk-[a-zA-Z0-9]{48}', '[OPENAI_API_KEY]', text)
+    text = re.sub(r'sk-ant-[a-zA-Z0-9-]{95}', '[ANTHROPIC_API_KEY]', text)
+    text = re.sub(r'ghp_[a-zA-Z0-9]{36}', '[GITHUB_TOKEN]', text)
+    text = re.sub(r'gho_[a-zA-Z0-9]{36}', '[GITHUB_OAUTH]', text)
+    text = re.sub(r'hf_[a-zA-Z0-9]{34}', '[HUGGINGFACE_TOKEN]', text)
+    text = re.sub(r'xoxb-[0-9]{10,13}-[0-9]{10,13}-[a-zA-Z0-9]{24}', '[SLACK_TOKEN]', text)
+    text = re.sub(r'xoxp-[0-9]{10,13}-[0-9]{10,13}-[a-zA-Z0-9]{24}', '[SLACK_TOKEN]', text)
+    
+    # AWS Credentials
+    text = re.sub(r'AKIA[0-9A-Z]{16}', '[AWS_ACCESS_KEY]', text)
+    text = re.sub(r'aws_secret_access_key\s*=\s*["\']?[A-Za-z0-9/+=]{40}["\']?', 'aws_secret_access_key=[AWS_SECRET]', text, flags=re.IGNORECASE)
+    
+    # Private Keys (PEM format)
+    text = re.sub(
+        r'-----BEGIN (RSA |DSA |EC |OPENSSH )?PRIVATE KEY-----[\s\S]+?-----END (RSA |DSA |EC |OPENSSH )?PRIVATE KEY-----',
+        '[PRIVATE_KEY_REDACTED]',
+        text
+    )
+    
+    # Crypto Seed Phrases (12 or 24 words)
+    # Common pattern: word word word... (BIP39 standard)
+    text = re.sub(
+        r'\b(?:abandon|ability|able|about|above|absent|absorb|abstract|absurd|abuse|access|accident|account|accuse|achieve|acid|acoustic|acquire|across|act|action|actor|actress|actual|adapt|add|addict|address|adjust|admit|adult|advance|advice|aerobic|affair|afford|afraid|again|age|agent|agree|ahead|aim|air|airport|aisle|alarm|album|alcohol|alert|alien|all|alley|allow|almost|alone|alpha|already|also|alter|always|amateur|amazing|among|amount|amused|analyst|anchor|ancient|anger|angle|angry|animal|ankle|announce|annual|another|answer|antenna|antique|anxiety|any|apart|apology|appear|apple|approve|april|arch|arctic|area|arena|argue|arm|armed|armor|army|around|arrange|arrest|arrive|arrow|art|artefact|artist|artwork|ask|aspect|assault|asset|assist|assume|asthma|athlete|atom|attack|attend|attitude|attract|auction|audit|august|aunt|author|auto|autumn|average|avocado|avoid|awake|aware|away|awesome|awful|awkward|axis|baby|bachelor|bacon|badge|bag|balance|balcony|ball|bamboo|banana|banner|bar|barely|bargain|barrel|base|basic|basket|battle|beach|bean|beauty|because|become|beef|before|begin|behave|behind|believe|below|belt|bench|benefit|best|betray|better|between|beyond|bicycle|bid|bike|bind|biology|bird|birth|bitter|black|blade|blame|blanket|blast|bleak|bless|blind|blood|blossom|blouse|blue|blur|blush|board|boat|body|boil|bomb|bone|bonus|book|boost|border|boring|borrow|boss|bottom|bounce|box|boy|bracket|brain|brand|brass|brave|bread|breeze|brick|bridge|brief|bright|bring|brisk|broccoli|broken|bronze|broom|brother|brown|brush|bubble|buddy|budget|buffalo|build|bulb|bulk|bullet|bundle|bunker|burden|burger|burst|bus|business|busy|butter|buyer|buzz)\s+(?:abandon|ability|able|about|above|absent|absorb|abstract|absurd|abuse|access|accident|account|accuse|achieve|acid|acoustic|acquire|across|act|action|actor|actress|actual|adapt|add|addict|address|adjust|admit|adult|advance|advice|aerobic|affair|afford|afraid|again|age|agent|agree|ahead|aim|air|airport|aisle|alarm|album|alcohol|alert|alien|all|alley|allow|almost|alone|alpha|already|also|alter|always|amateur|amazing|among|amount|amused|analyst|anchor|ancient|anger|angle|angry|animal|ankle|announce|annual|another|answer|antenna|antique|anxiety|any|apart|apology|appear|apple|approve|april|arch|arctic|area|arena|argue|arm|armed|armor|army|around|arrange|arrest|arrive|arrow|art|artefact|artist|artwork|ask|aspect|assault|asset|assist|assume|asthma|athlete|atom|attack|attend|attitude|attract|auction|audit|august|aunt|author|auto|autumn|average|avocado|avoid|awake|aware|away|awesome|awful|awkward|axis|baby|bachelor|bacon|badge|bag|balance|balcony|ball|bamboo|banana|banner|bar|barely|bargain|barrel|base|basic|basket|battle|beach|bean|beauty|because|become|beef|before|begin|behave|behind|believe|below|belt|bench|benefit|best|betray|better|between|beyond|bicycle|bid|bike|bind|biology|bird|birth|bitter|black|blade|blame|blanket|blast|bleak|bless|blind|blood|blossom|blouse|blue|blur|blush|board|boat|body|boil|bomb|bone|bonus|book|boost|border|boring|borrow|boss|bottom|bounce|box|boy|bracket|brain|brand|brass|brave|bread|breeze|brick|bridge|brief|bright|bring|brisk|broccoli|broken|bronze|broom|brother|brown|brush|bubble|buddy|budget|buffalo|build|bulb|bulk|bullet|bundle|bunker|burden|burger|burst|bus|business|busy|butter|buyer|buzz)\s+(?:abandon|ability|able|about|above|absent|absorb|abstract|absurd|abuse|access|accident|account|accuse|achieve|acid|acoustic|acquire|across|act|action|actor|actress|actual|adapt|add|addict|address|adjust|admit|adult|advance|advice|aerobic|affair|afford|afraid|again|age|agent|agree|ahead|aim|air|airport|aisle|alarm|album|alcohol|alert|alien|all|alley|allow|almost|alone|alpha|already|also|alter|always|amateur|amazing|among|amount|amused|analyst|anchor|ancient|anger|angle|angry|animal|ankle|announce|annual|another|answer|antenna|antique|anxiety|any|apart|apology|appear|apple|approve|april|arch|arctic|area|arena|argue|arm|armed|armor|army|around|arrange|arrest|arrive|arrow|art|artefact|artist|artwork|ask|aspect|assault|asset|assist|assume|asthma|athlete|atom|attack|attend|attitude|attract|auction|audit|august|aunt|author|auto|autumn|average|avocado|avoid|awake|aware|away|awesome|awful|awkward|axis|baby|bachelor|bacon|badge|bag|balance|balcony|ball|bamboo|banana|banner|bar|barely|bargain|barrel|base|basic|basket|battle|beach|bean|beauty|because|become|beef|before|begin|behave|behind|believe|below|belt|bench|benefit|best|betray|better|between|beyond|bicycle|bid|bike|bind|biology|bird|birth|bitter|black|blade|blame|blanket|blast|bleak|bless|blind|blood|blossom|blouse|blue|blur|blush|board|boat|body|boil|bomb|bone|bonus|book|boost|border|boring|borrow|boss|bottom|bounce|box|boy|bracket|brain|brand|brass|brave|bread|breeze|brick|bridge|brief|bright|bring|brisk|broccoli|broken|bronze|broom|brother|brown|brush|bubble|buddy|budget|buffalo|build|bulb|bulk|bullet|bundle|bunker|burden|burger|burst|bus|business|busy|butter|buyer|buzz){10,22}\b',
+        '[SEED_PHRASE_REDACTED]',
+        text,
+        flags=re.IGNORECASE
+    )
+    
+    # Ethereum/Crypto Private Keys (64 hex chars)
+    text = re.sub(r'\b[0-9a-fA-F]{64}\b', '[PRIVATE_KEY]', text)
+    
+    # Crypto Addresses
+    text = re.sub(r'\b0x[a-fA-F0-9]{40}\b', '[ETH_ADDRESS]', text)  # Ethereum
+    text = re.sub(r'\b[13][a-km-zA-HJ-NP-Z1-9]{25,34}\b', '[BTC_ADDRESS]', text)  # Bitcoin
+    text = re.sub(r'\bbc1[a-z0-9]{39,87}\b', '[BTC_ADDRESS]', text)  # Bitcoin Bech32
+    
+    # JWT Tokens
+    text = re.sub(r'eyJ[a-zA-Z0-9_-]+\.eyJ[a-zA-Z0-9_-]+\.[a-zA-Z0-9_-]+', '[JWT_TOKEN]', text)
+    
+    # Database URLs with passwords
+    text = re.sub(
+        r'(postgres|mysql|mongodb|redis)://[^:]+:([^@]+)@',
+        r'\1://[USER]:[PASSWORD]@',
+        text,
+        flags=re.IGNORECASE
+    )
+    
+    # Generic password patterns
+    text = re.sub(
+        r'(password|passwd|pwd|secret)\s*[:=]\s*["\']?[^\s"\']+["\']?',
+        r'\1=[PASSWORD]',
+        text,
+        flags=re.IGNORECASE
+    )
+    
+    # Credit card numbers (basic pattern)
+    text = re.sub(r'\b\d{4}[\s-]?\d{4}[\s-]?\d{4}[\s-]?\d{4}\b', '[CREDIT_CARD]', text)
+    
+    # Social Security Numbers (US)
+    text = re.sub(r'\b\d{3}-\d{2}-\d{4}\b', '[SSN]', text)
+    
+    # Phone numbers (international format)
+    text = re.sub(r'\+?1?\s*\(?\d{3}\)?[\s.-]?\d{3}[\s.-]?\d{4}\b', '[PHONE]', text)
+    
+    # IP Addresses (keep structure but redact last octet for privacy)
+    text = re.sub(r'\b(\d{1,3}\.\d{1,3}\.\d{1,3}\.)\d{1,3}\b', r'\1[IP]', text)
+    
+    # File paths (keep structure, redact username)
+    text = re.sub(r'/Users/([^/\s]+)', r'/Users/[USER]', text)
+    text = re.sub(r'C:\\Users\\([^\\]+)', r'C:\\Users\\[USER]', text)
+    text = re.sub(r'/home/([^/\s]+)', r'/home/[USER]', text)
+    
     return text
 
 def process_file_full(path):
@@ -99,8 +172,8 @@ def main(input, output, dry_run, full):
         uvx claude-collector -o my-data.jsonl   # Custom output
     """
     
-    console.print("\n[bold cyan]🤖 Claude Collector v0.1.0[/bold cyan]")
-    console.print("[dim]Full Agentic Data Extraction[/dim]\n")
+    console.print("\n[bold cyan]🤖 Claude Collector v0.2.0[/bold cyan]")
+    console.print("[dim]Full Agentic Data Extraction with Comprehensive Security[/dim]\n")
     
     # Find data
     if input:

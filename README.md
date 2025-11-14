@@ -178,13 +178,35 @@ find ~ -name "*.jsonl" -path "*/.claude/*" 2>/dev/null
 
 ⚠️ **Important**: Claude Code logs contain sensitive data!
 
-**The tool sanitizes:**
-- ✅ Email addresses
-- ✅ API keys and tokens
-- ✅ File paths (username removed)
-- ✅ IP addresses
+**The tool comprehensively sanitizes:**
+
+**🔐 API Keys & Tokens**:
+- ✅ OpenAI API keys (`sk-*`)
+- ✅ Anthropic API keys (`sk-ant-*`)
+- ✅ GitHub tokens (`ghp_*`, `gho_*`)
+- ✅ HuggingFace tokens (`hf_*`)
+- ✅ Slack tokens (`xoxb-*`, `xoxp-*`)
+- ✅ AWS credentials (access keys, secrets)
+- ✅ JWT tokens
+
+**💰 Financial & Crypto**:
+- ✅ Credit card numbers
+- ✅ Crypto seed phrases (BIP39)
+- ✅ Ethereum/Bitcoin addresses
+- ✅ Crypto private keys (64 hex)
+
+**🔑 Authentication**:
+- ✅ Private keys (PEM format)
+- ✅ Database URLs with passwords
+- ✅ Generic password patterns
 - ✅ OAuth credentials
-- ✅ Passwords
+
+**👤 Personal Information**:
+- ✅ Email addresses
+- ✅ Social Security Numbers (US)
+- ✅ Phone numbers
+- ✅ IP addresses (last octet redacted)
+- ✅ File paths (username redacted)
 
 **Still check before sharing:**
 - Project names (if sensitive)

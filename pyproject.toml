@@ -29,10 +29,23 @@ dependencies = [
 [project.scripts]
 claude-collector = "claude_collector.cli:main"
 
+[project.optional-dependencies]
+test = [
+    "pytest>=7.0.0",
+    "pytest-cov>=4.0.0",
+]
+
 [project.urls]
-Homepage = "https://github.com/hanzoai/claude-collector"
-Repository = "https://github.com/hanzoai/claude-collector"
+Homepage = "https://github.com/zenlm/claude-collector"
+Repository = "https://github.com/zenlm/claude-collector"
 
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+addopts = "-v --cov=claude_collector --cov-report=term-missing"

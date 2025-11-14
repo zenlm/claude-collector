@@ -7,7 +7,6 @@ All secrets are generated at runtime to avoid committing any sensitive patterns.
 import json
 import random
 import string
-from pathlib import Path
 from claude_collector.sanitizer import sanitize
 
 

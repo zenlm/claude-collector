@@ -155,9 +155,11 @@ def process_file_full(path):
                 # Keep the FULL entry with all metadata
                 entries.append(data)
                 
-            except:
+            except (json.JSONDecodeError, KeyError, ValueError, TypeError):
+                # Skip malformed JSONL lines
                 pass
-    except:
+    except (FileNotFoundError, IOError, PermissionError):
+        # Skip files that can't be read
         pass
     
     return entries, tokens
@@ -206,7 +208,7 @@ def main(input, output, dry_run, full):
         return
     
     console.print(f"[green]✓[/green] Found: {dir}")
-    console.print(f"[yellow]⚙️[/yellow]  Mode: FULL (includes tool calls & metadata)\n")
+    console.print("[yellow]⚙️[/yellow]  Mode: FULL (includes tool calls & metadata)\n")
     
     files = list(dir.rglob('*.jsonl'))
     console.print(f"[cyan]📂 Processing {len(files)} files...[/cyan]\n")
@@ -258,12 +260,12 @@ def main(input, output, dry_run, full):
     
     size = out.stat().st_size / 1024 / 1024
     
-    console.print(f"[green]✅ Full dataset saved![/green]")
+    console.print("[green]✅ Full dataset saved![/green]")
     console.print(f"   File: [cyan]{out.name}[/cyan]")
     console.print(f"   Size: [cyan]{size:.2f} MB[/cyan]")
     console.print(f"   Entries: [cyan]{len(all_entries):,}[/cyan]")
     console.print(f"   Tokens: [cyan]{total_tokens:,} ({total_tokens/1e9:.2f}B)[/cyan]")
-    console.print(f"\n[bold green]🎉 Ready for agentic training![/bold green]\n")
+    console.print("\n[bold green]🎉 Ready for agentic training![/bold green]\n")
 
 if __name__ == '__main__':
     main()

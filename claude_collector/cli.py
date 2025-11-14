@@ -28,9 +28,26 @@ def sanitize(text):
     text = re.sub(r'sk-ant-[a-zA-Z0-9-]{95}', '[ANTHROPIC_API_KEY]', text)
     text = re.sub(r'ghp_[a-zA-Z0-9]{36}', '[GITHUB_TOKEN]', text)
     text = re.sub(r'gho_[a-zA-Z0-9]{36}', '[GITHUB_OAUTH]', text)
+    text = re.sub(r'ghs_[a-zA-Z0-9]{36}', '[GITHUB_SECRET]', text)
+    text = re.sub(r'\b[0-9a-f]{40}\b', '[GITHUB_TOKEN_40]', text)  # GitHub 40-char hex tokens
     text = re.sub(r'hf_[a-zA-Z0-9]{34}', '[HUGGINGFACE_TOKEN]', text)
     text = re.sub(r'xoxb-[0-9]{10,13}-[0-9]{10,13}-[a-zA-Z0-9]{24}', '[SLACK_TOKEN]', text)
     text = re.sub(r'xoxp-[0-9]{10,13}-[0-9]{10,13}-[a-zA-Z0-9]{24}', '[SLACK_TOKEN]', text)
+    text = re.sub(r'xoxe-[0-9]{10,13}-[a-zA-Z0-9]{32,}', '[SLACK_APP_TOKEN]', text)
+    
+    # More API keys
+    text = re.sub(r'SG\.[a-zA-Z0-9_-]{22}\.[a-zA-Z0-9_-]{43}', '[SENDGRID_API_KEY]', text)
+    text = re.sub(r'key-[0-9a-zA-Z]{32}', '[GENERIC_API_KEY]', text)
+    text = re.sub(r'AIza[0-9A-Za-z_-]{35}', '[GOOGLE_API_KEY]', text)
+    text = re.sub(r'ya29\.[0-9A-Za-z_-]+', '[GOOGLE_OAUTH]', text)
+    text = re.sub(r'EAACEdEose0c[0-9A-Za-z]+', '[FACEBOOK_ACCESS_TOKEN]', text)
+    text = re.sub(r'AAAA[A-Za-z0-9%]{80,}', '[TWITTER_BEARER]', text)
+    text = re.sub(r'[0-9]{10}-[0-9A-Za-z]{48}', '[TWITTER_API_KEY]', text)
+    text = re.sub(r'sk_live_[0-9a-zA-Z]{24,}', '[STRIPE_LIVE_KEY]', text)
+    text = re.sub(r'sk_test_[0-9a-zA-Z]{24,}', '[STRIPE_TEST_KEY]', text)
+    text = re.sub(r'rk_live_[0-9a-zA-Z]{24,}', '[STRIPE_RESTRICTED_KEY]', text)
+    text = re.sub(r'sq0atp-[0-9A-Za-z_-]{22}', '[SQUARE_ACCESS_TOKEN]', text)
+    text = re.sub(r'sqOatp-[0-9A-Za-z_-]{22}', '[SQUARE_OAUTH]', text)
     
     # AWS Credentials
     text = re.sub(r'AKIA[0-9A-Z]{16}', '[AWS_ACCESS_KEY]', text)

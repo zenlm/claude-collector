@@ -183,11 +183,16 @@ find ~ -name "*.jsonl" -path "*/.claude/*" 2>/dev/null
 **🔐 API Keys & Tokens**:
 - ✅ OpenAI API keys (`sk-*`)
 - ✅ Anthropic API keys (`sk-ant-*`)
-- ✅ GitHub tokens (`ghp_*`, `gho_*`)
+- ✅ GitHub tokens (`ghp_*`, `gho_*`, `ghs_*`, 40-char hex)
 - ✅ HuggingFace tokens (`hf_*`)
-- ✅ Slack tokens (`xoxb-*`, `xoxp-*`)
-- ✅ AWS credentials (access keys, secrets)
+- ✅ Slack tokens (`xoxb-*`, `xoxp-*`, `xoxe-*`)
+- ✅ AWS credentials (AKIA*, secrets)
 - ✅ JWT tokens
+- ✅ Google API keys & OAuth
+- ✅ SendGrid API keys
+- ✅ Stripe keys (live, test, restricted)
+- ✅ Square tokens
+- ✅ Facebook/Twitter tokens
 
 **💰 Financial & Crypto**:
 - ✅ Credit card numbers

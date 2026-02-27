@@ -294,10 +294,6 @@ with open('claude_dataset.jsonl', 'r') as f:
 
 MIT - Free to use for any purpose
 
-## Credits
-
-Built by [Hanzo AI](https://hanzo.ai) for the AI development community.
-
 ---
 
 **Found a bug?** Open an issue: https://github.com/hanzoai/claude-collector/issues

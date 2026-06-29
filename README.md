@@ -1,3 +1,5 @@
+<p align="center"><img src=".github/hero.svg" alt="claude-collector" width="880"></p>
+
 # 🤖 Claude Collector
 
 **One command to extract all your Claude Code conversations for training datasets.**
